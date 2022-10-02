@@ -5,7 +5,25 @@ controller.getCarreras = async (_req, res) => {
     const carreras = await Carrera.find({ isActive: true })
         .populate('materias.materia', 'nombre')
 
-    res.json(carreras)
+    const carrerasFormateadas = carreras.map((element) => {
+
+        const { _id, nombre, tituloOtorga, duracion, descripcion, modalidad, materias } = element
+        const carrera = { _id, nombre, tituloOtorga, duracion, descripcion, modalidad }
+        
+        const nombresMateria = []
+
+        materias.forEach((element)=>{
+
+            nombresMateria.push(element.materia.nombre)
+            
+        })
+
+        carrera.materias = nombresMateria
+
+        return carrera
+    })
+
+    res.json(carrerasFormateadas)
 }
 
 controller.getCarrera = async (req, res) => {
@@ -15,7 +33,18 @@ controller.getCarrera = async (req, res) => {
         const carrera = await Carrera.findOne({ _id: id })
             .populate('materias.materia', 'nombre')
 
-        res.json(carrera)
+        const { _id, nombre, tituloOtorga, duracion, descripcion, modalidad, materias } = carrera
+        const carreraFormateada = { _id, nombre, tituloOtorga, duracion, descripcion, modalidad }
+        const nombresMateria = []
+
+        materias.forEach((element)=>{
+
+            nombresMateria.push(element.materia.nombre)
+        })
+
+        carreraFormateada.materias = nombresMateria
+
+        res.json(carreraFormateada)
     } catch (error) {
         res.json({
             msg: "Error al obtener carrera"

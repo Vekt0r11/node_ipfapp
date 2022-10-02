@@ -15,7 +15,8 @@
 **13.** 22/09/2022 - **Controldaores de Anuncios. ✔**
 **14.** 22/09/2022 - **Rutas de Anuncios. ✔**
 **15.** 23/09/2022 - **Testeo basico de rutas de materias, carreras y anuncios en Thunderbolt Client. ✔** 
-**16.** 26/09/2022 - **Populate en carreras, materias y anuncios** 
-**17.** 27/09/2022 - **Reformateo del resultado del populate de anuncios**
-**18.** 27/09/2022 - **Reformateo del resultado del populate de materias**
-**19.** 27/09/2022 - ****
+**16.** 26/09/2022 - **Populate en carreras, materias y anuncios ✔** 
+**17.** 27/09/2022 - **Reformateo del resultado del populate de anuncios ✔**
+**18.** 27/09/2022 - **Reformateo del resultado del populate de materias. (falta getMaterias, consultar)**
+**19.** 27/09/2022 - **Reformateo del resultado del populate de carreras ✔**
+**20.** 02/10/2022 - ****

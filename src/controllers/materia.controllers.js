@@ -4,20 +4,26 @@ const controller = {};
 controller.getMaterias = async (_req, res) => {
     const materias = await Materia.find({ isActive: true })
         .populate('jefeCatedra auxiliar cursantes.estudiante', 'infoPersonal.nombres infoPersonal.nombres infoPersonal.nombres')
-    
+        
+    // console.log(materias)
     const nuevoFormato = materias.map((element) => {
 
         const { _id, nombre, jefeCatedra, auxiliar, clases, cuatrimestre, anio, cursantes } = element
-        const materia = { _id, nombre, clases, cuatrimestre, anio, cursantes }
+        const materia = { _id, nombre, clases, cuatrimestre, anio }
         
         materia.jefeCatedra = jefeCatedra.infoPersonal.nombres
         materia.auxiliar = auxiliar.infoPersonal.nombres
-        const temp = cursantes.map((element, index) => {
-            const temp = element.estudiante.infoPersonal.nombres
-            materia.cursantes[index].estudiante = temp
-        })
 
-        console.log(temp)
+        //HELP TOY CHIKITO
+        const temp = []
+
+        materia.cursantes.forEach((element, index) => {
+            
+            temp.push(element.estudiante.infoPersonal.nombres)
+            
+        })
+        //HELP TOY CHIKITO
+        
 
         return materia
     })
@@ -30,10 +36,24 @@ controller.getMateria = async (req, res) => {
 
     try {
         const materia = await Materia.findOne({ _id: id })
-            .populate('jefeCatedra', 'infoPersonal.nombres')
-            .populate('auxiliar', 'infoPersonal.nombres')
+            .populate('cursantes.estudiante jefeCatedra auxiliar', 'cursantes.estudiante.infoPersonal.nombres infoPersonal.nombres infoPersonal.nombres')
 
-        res.json(materia)
+        const { _id, nombre, jefeCatedra, auxiliar, clases, cuatrimestre, anio, cursantes } = materia
+        const materiaFormateada = { _id, nombre, clases, cuatrimestre, anio }
+            
+        materiaFormateada.jefeCatedra = jefeCatedra.infoPersonal.nombres
+        materiaFormateada.auxiliar = auxiliar.infoPersonal.nombres
+        
+        ///HELP TOY CHIKITO
+        const arr = [...cursantes]
+
+        arr.forEach((element, index)=>{
+            arr[index].estudiante = element.estudiante.infoPersonal.nombres
+        })
+        //HELP TOY CHIKITO
+        console.log(arr)
+
+        res.json(materiaFormateada)
     } catch (error) {
         res.json({
             msg: "Error al obtener materia"

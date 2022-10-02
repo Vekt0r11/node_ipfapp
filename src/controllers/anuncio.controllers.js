@@ -5,7 +5,7 @@ controller.getAnuncios = async (_req, res) => {
     const anuncios = await Anuncio.find({ isActive: true })
         .populate('autor carrera materia', 'infoPersonal.nombres nombre nombre')
         
-    const anunciosFormateados = await anuncios.map((element) => {
+    const anunciosFormateados = anuncios.map((element) => {
 
         const { _id, autor, titulo, descripcion, fecha, tipo, carrera, materia } = element
         const anuncio = { _id, titulo, descripcion, fecha, tipo }
@@ -24,7 +24,8 @@ controller.getAnuncio = async (req, res) => {
     const { id } = req.params
 
     try {
-        const anuncio = await Anuncio.findOne({ _id: id }).populate('autor carrera materia', 'infoPersonal.nombres nombre nombre')
+        const anuncio = await Anuncio.findOne({ _id: id })
+            .populate('autor carrera materia', 'infoPersonal.nombres nombre nombre')
         
         const { _id, autor, titulo, descripcion, fecha, tipo, carrera, materia } = anuncio
         const anuncioFormateado = { _id, titulo, descripcion, fecha, tipo }
