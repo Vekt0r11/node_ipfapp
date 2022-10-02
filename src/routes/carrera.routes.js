@@ -7,7 +7,6 @@ const {
   deleteCarrera
 } = require("../controllers/carrera.controllers");
 
-// normal:
 route.get("/", getCarreras); //
 route.get("/:id", getCarrera); //
 

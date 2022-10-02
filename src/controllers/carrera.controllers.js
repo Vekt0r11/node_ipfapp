@@ -3,6 +3,7 @@ const controller = {};
 
 controller.getCarreras = async (_req, res) => {
     const carreras = await Carrera.find({ isActive: true })
+        .populate('materias.materia', 'nombre')
 
     res.json(carreras)
 }
@@ -12,6 +13,7 @@ controller.getCarrera = async (req, res) => {
 
     try {
         const carrera = await Carrera.findOne({ _id: id })
+            .populate('materias.materia', 'nombre')
 
         res.json(carrera)
     } catch (error) {
@@ -43,15 +45,15 @@ controller.updateCarrera = async (req, res) => {
     const datos = { nombre, tituloOtorga, duracion, descripcion, modalidad, materias, isActive } = req.body
     const update = {}
 
-    if (nombre)         { update.nombre }
-    if (tituloOtorga)   { update.tituloOtorga }
-    if (duracion)       { update.duracion }
-    if (descripcion)    { update.descripcion }
-    if (modalidad)      { update.modalidad }
-    if (materias)       { update.materias }
-    if (isActive)       { update.isActive }
+    if (nombre)         { update.nombre = nombre }
+    if (tituloOtorga)   { update.tituloOtorga = tituloOtorga }
+    if (duracion)       { update.duracion = duracion }
+    if (descripcion)    { update.descripcion = descripcion }
+    if (modalidad)      { update.modalidad = modalidad }
+    if (materias)       { update.materias = materias }
+    if (isActive)       { update.isActive = isActive }
 
-    if (update.nombre || update.tituloOtorga || update.duracion || update.descripcion || update.modalidad || update.materias || update.isActive) {
+    if (update.nombre || update.tituloOtorga || update.duracion || update.descripcion || update.modalidad || update.materias || update.isActive ) {
         
         try {
             const carrera = await Carrera.findByIdAndUpdate(id, update, { new: true })
@@ -85,3 +87,5 @@ controller.deleteCarrera = async (req, res) => {
     }
 
 }
+
+module.exports = controller

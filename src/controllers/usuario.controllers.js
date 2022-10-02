@@ -69,9 +69,9 @@ controller.updateUsuario = async (req, res) => {
     if (datosEstudiante)    { update.datosEstudiante = datosEstudiante }
     if (datosProfesor)      { update.datosProfesor = datosProfesor }
     if (datosAdministrativo){ update.datosAdministrativo = datosAdministrativo }
-    if (isActive)           { update.isActive = isActive }
+    if (isActive)       { update.isActive = isActive }
 
-    if (update.nombreUsuario || update.correo || update.infoPersonal || update.documentaciones || update.fotoPerfil || update.rol || update.datosEstudiante || update.datosProfesor || update.datosAdministrativo || update.isActive) {
+    if (update.nombreUsuario || update.correo || update.infoPersonal || update.documentaciones || update.fotoPerfil || update.rol || update.datosEstudiante || update.datosProfesor || update.datosAdministrativo || update.isActive ) {
         try {
             const usuario = await Usuario.findByIdAndUpdate(id, update, { new: true })
 

@@ -3,18 +3,38 @@ const controller = {};
 
 controller.getAnuncios = async (_req, res) => {
     const anuncios = await Anuncio.find({ isActive: true })
+        .populate('autor carrera materia', 'infoPersonal.nombres nombre nombre')
+        
+    const anunciosFormateados = await anuncios.map((element) => {
 
-    res.json(anuncios)
+        const { _id, autor, titulo, descripcion, fecha, tipo, carrera, materia } = element
+        const anuncio = { _id, titulo, descripcion, fecha, tipo }
+        
+        anuncio.autor = autor.infoPersonal.nombres
+        if(carrera){ anuncio.carrera = carrera.nombre }
+        if(materia){ anuncio.materia = materia.nombre }
+
+        return anuncio
+    })
+
+    res.json(anunciosFormateados)
 }
 
 controller.getAnuncio = async (req, res) => {
     const { id } = req.params
 
     try {
-        const anuncio = await Anuncio.findOne({ _id: id })
+        const anuncio = await Anuncio.findOne({ _id: id }).populate('autor carrera materia', 'infoPersonal.nombres nombre nombre')
+        
+        const { _id, autor, titulo, descripcion, fecha, tipo, carrera, materia } = anuncio
+        const anuncioFormateado = { _id, titulo, descripcion, fecha, tipo }
+        
+        anuncioFormateado.autor = autor.infoPersonal.nombres
+        if(carrera){ anuncio.carrera = carrera.nombre }
+        if(materia){ anuncio.materia = materia.nombre }
 
-        res.json(anuncio)
-    } catch (error) {
+        res.json(anuncioFormateado)
+        } catch (error) {
         res.json({
             msg: "Error al obtener anuncio"
         })
@@ -43,12 +63,11 @@ controller.updateAnuncio = async (req, res) => {
     const datos = { titulo, descripcion, isActive } = req.body
     const update = {}
 
-    if (titulo)         { update.titulo }
-    if (descripcion)    { update.descripcion }
-    if (isActive)       { update.isActive }
+    if (titulo)         { update.titulo = titulo }
+    if (descripcion)    { update.descripcion = descripcion }
+    if (isActive)       { update.isActive = isActive }
 
-
-    if (update.titulo || update.descripcion || update.isActive) {
+    if (update.titulo || update.descripcion || update.isActive ) {
         
         try {
             const anuncio = await Anuncio.findByIdAndUpdate(id, update, { new: true })
@@ -82,3 +101,5 @@ controller.deleteAnuncio = async (req, res) => {
     }
 
 }
+
+module.exports = controller

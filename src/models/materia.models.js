@@ -5,7 +5,6 @@ const {
 const Usuario = require('./usuario.models')
 
 const MateriaSchema = new Schema({
-  _id: Schema.Types.ObjectId,
   nombre: {
     type: String,
     required: true

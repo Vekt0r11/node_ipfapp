@@ -7,7 +7,6 @@ const {
   deleteAnuncio
 } = require("../controllers/anuncio.controllers");
 
-// normal:
 route.get("/", getAnuncios); //
 route.get("/:id", getAnuncio); //
 

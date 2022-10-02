@@ -1,6 +1,5 @@
 const route = require("express").Router();
 
-// controllers
 const {
   getUsuarios,
   getUsuario,
@@ -10,7 +9,6 @@ const {
   deleteUsuario,
 } = require("../controllers/usuario.controllers");
 
-// normal:
 route.get("/", getUsuarios); //
 route.get("/:id", getUsuario); //
 

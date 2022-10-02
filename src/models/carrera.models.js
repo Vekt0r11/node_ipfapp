@@ -5,14 +5,15 @@ const {
 const Materia = require('./materia.models')
 
 const CarreraSchema = new Schema({
-  _id: Schema.Types.ObjectId,
   nombre: {
     type: String,
-    required: true
-  },
+    required: true,
+    unique: true
+  }, 
   tituloOtorga: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   duracion: {
     type: Number,
@@ -30,7 +31,7 @@ const CarreraSchema = new Schema({
   materias:[{
     materia: {
       type: Schema.Types.ObjectId,
-      ref: 'materia'
+      ref: 'Materia'
     }
   }],
   isActive: {

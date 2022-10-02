@@ -6,7 +6,6 @@ const Materia = require('./materia.models')
 const Carrera = require('./carrera.models')
 
 const AnuncioSchema = new Schema({
-    _id: Schema.Types.ObjectId,
     autor: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario'

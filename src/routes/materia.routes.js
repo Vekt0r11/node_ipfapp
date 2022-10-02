@@ -1,4 +1,5 @@
 const route = require("express").Router();
+
 const { 
   getMateria,
   getMaterias,
@@ -7,7 +8,7 @@ const {
   deleteMateria
 } = require("../controllers/materia.controllers");
 
-// normal:
+
 route.get("/", getMaterias); //
 route.get("/:id", getMateria); //
 
