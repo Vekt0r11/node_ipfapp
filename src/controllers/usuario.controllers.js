@@ -49,6 +49,7 @@ controller.createUsuario = async (req, res) => {
     } catch (error) {
         return res.status(401).json({
             msg: "Error al crear usuario",
+            // error
         })
     }
 }
@@ -57,6 +58,7 @@ controller.createUsuario = async (req, res) => {
 controller.updateUsuario = async (req, res) => {
 
     const { id } = req.params
+
     const { nombreUsuario, correo, infoPersonal, documentaciones, fotoPerfil, rol, isActive, datosEstudiante, datosProfesor, datosAdministrativo } = req.body
     const update = {}
 
@@ -69,9 +71,10 @@ controller.updateUsuario = async (req, res) => {
     if (datosEstudiante)    { update.datosEstudiante = datosEstudiante }
     if (datosProfesor)      { update.datosProfesor = datosProfesor }
     if (datosAdministrativo){ update.datosAdministrativo = datosAdministrativo }
-    if (isActive)       { update.isActive = isActive }
+    if (isActive !== null)  { update.isActive = isActive }
 
-    if (update.nombreUsuario || update.correo || update.infoPersonal || update.documentaciones || update.fotoPerfil || update.rol || update.datosEstudiante || update.datosProfesor || update.datosAdministrativo || update.isActive ) {
+    console.log(update)
+    if (update.nombreUsuario || update.correo || update.infoPersonal || update.documentaciones || update.fotoPerfil || update.rol || update.datosEstudiante || update.datosProfesor || update.datosAdministrativo || update.isActive !== null ) {
         try {
             const usuario = await Usuario.findByIdAndUpdate(id, update, { new: true })
 

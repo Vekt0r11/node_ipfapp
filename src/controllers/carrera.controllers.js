@@ -1,25 +1,38 @@
 const Carrera = require("../models/carrera.models");
 const controller = {};
 
+//Obtener todas las carreras activas
 controller.getCarreras = async (_req, res) => {
     const carreras = await Carrera.find({ isActive: true })
-        .populate('materias.materia', 'nombre')
-
-    const carrerasFormateadas = carreras.map((element) => {
-
-        const { _id, nombre, tituloOtorga, duracion, descripcion, modalidad, materias } = element
-        const carrera = { _id, nombre, tituloOtorga, duracion, descripcion, modalidad }
-        
-        const nombresMateria = []
-
-        materias.forEach((element)=>{
-
-            nombresMateria.push(element.materia.nombre)
-            
+        .populate({
+            path: 'materias.materia',
+            select: 'nombre',
+            match: { isActive: { $eq: true } }
         })
 
-        carrera.materias = nombresMateria
+    //Por cada carrera reformatear los campos populados
+    const carrerasFormateadas = carreras.map((element) => {
 
+        //Desestructuramos y clonamos localmente la respuesta de la base de datos
+        const { _id, nombre, tituloOtorga, duracion, descripcion, modalidad, materias } = element
+        const carrera = { _id, nombre, tituloOtorga, duracion, descripcion, modalidad }
+
+        const nombresMateria = []
+        
+        //Por cada materia reformatear para devolver un objeto con solamente el nombre y el id de la materia
+        materias.forEach((element) => {
+
+            if (element.materia) {
+                const nombre = element.materia.nombre
+                const _id = element.materia._id
+
+                nombresMateria.push({ nombre, _id })
+            }
+
+        })
+        carrera.materias = nombresMateria
+        
+        //Devolver carrera con nuevo formato
         return carrera
     })
 
@@ -37,7 +50,7 @@ controller.getCarrera = async (req, res) => {
         const carreraFormateada = { _id, nombre, tituloOtorga, duracion, descripcion, modalidad }
         const nombresMateria = []
 
-        materias.forEach((element)=>{
+        materias.forEach((element) => {
 
             nombresMateria.push(element.materia.nombre)
         })
@@ -74,16 +87,16 @@ controller.updateCarrera = async (req, res) => {
     const datos = { nombre, tituloOtorga, duracion, descripcion, modalidad, materias, isActive } = req.body
     const update = {}
 
-    if (nombre)         { update.nombre = nombre }
-    if (tituloOtorga)   { update.tituloOtorga = tituloOtorga }
-    if (duracion)       { update.duracion = duracion }
-    if (descripcion)    { update.descripcion = descripcion }
-    if (modalidad)      { update.modalidad = modalidad }
-    if (materias)       { update.materias = materias }
-    if (isActive)       { update.isActive = isActive }
+    if (nombre) { update.nombre = nombre }
+    if (tituloOtorga) { update.tituloOtorga = tituloOtorga }
+    if (duracion) { update.duracion = duracion }
+    if (descripcion) { update.descripcion = descripcion }
+    if (modalidad) { update.modalidad = modalidad }
+    if (materias) { update.materias = materias }
+    if (isActive !== null) { update.isActive = isActive }
 
-    if (update.nombre || update.tituloOtorga || update.duracion || update.descripcion || update.modalidad || update.materias || update.isActive ) {
-        
+    if (update.nombre || update.tituloOtorga || update.duracion || update.descripcion || update.modalidad || update.materias || update.isActive !== null) {
+
         try {
             const carrera = await Carrera.findByIdAndUpdate(id, update, { new: true })
 

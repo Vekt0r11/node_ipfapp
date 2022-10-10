@@ -10,7 +10,8 @@ controller.getAnuncios = async (_req, res) => {
         const { _id, autor, titulo, descripcion, fecha, tipo, carrera, materia } = element
         const anuncio = { _id, titulo, descripcion, fecha, tipo }
         
-        anuncio.autor = autor.infoPersonal.nombres
+        anuncio.autor = {nombres: autor.infoPersonal.nombres, _id: autor._id}
+        
         if(carrera){ anuncio.carrera = carrera.nombre }
         if(materia){ anuncio.materia = materia.nombre }
 
@@ -66,9 +67,9 @@ controller.updateAnuncio = async (req, res) => {
 
     if (titulo)         { update.titulo = titulo }
     if (descripcion)    { update.descripcion = descripcion }
-    if (isActive)       { update.isActive = isActive }
+    if (isActive !== null)       { update.isActive = isActive }
 
-    if (update.titulo || update.descripcion || update.isActive ) {
+    if (update.titulo || update.descripcion || update.isActive !== null ) {
         
         try {
             const anuncio = await Anuncio.findByIdAndUpdate(id, update, { new: true })
