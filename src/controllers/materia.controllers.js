@@ -24,6 +24,14 @@ controller.getMaterias = async (_req, res) => {
             _id
         }
 
+        materia.cursantes = element.cursantes.filter((element) => {
+
+            if (element.estudiante !== undefined || element.estudiante !== null) {
+                return element
+            }
+        })
+
+        // console.log(materia.cursantes)
         return materia
     })
 
@@ -35,13 +43,24 @@ controller.getMateria = async (req, res) => {
 
     try {
         const materia = await Materia.findOne({ _id: id })
-            .populate('cursantes.estudiante jefeCatedra auxiliar', 'cursantes.estudiante.infoPersonal.nombres infoPersonal.nombres infoPersonal.nombres')
+            .populate({
+                path: 'cursantes.estudiante jefeCatedra auxiliar',
+                select: 'cursantes.estudiante.infoPersonal.nombres infoPersonal.nombres infoPersonal.nombres',
+                match: { isActive: { $eq: true } }
+            })
 
         const { _id, nombre, jefeCatedra, auxiliar, clases, cuatrimestre, anio, cursantes } = materia
         const materiaFormateada = { _id, nombre, clases, cuatrimestre, anio, cursantes }
 
         materiaFormateada.jefeCatedra = jefeCatedra.infoPersonal.nombres
         materiaFormateada.auxiliar = auxiliar.infoPersonal.nombres
+
+        materiaFormateada.cursantes = materiaFormateada.cursantes.filter((element) => {
+
+            if (element.estudiante !== undefined || element.estudiante !== null) {
+                return element
+            }
+        })
 
         res.json(materiaFormateada)
     } catch (error) {
@@ -75,29 +94,52 @@ controller.createMateria = async (req, res) => {
         })
     }
 }
+
+controller.updateNotaCursante = async (req, res) => {
+    try {
+        //Pasar id del objeto del cursante
+        const { id } = req.params.id
+
+        const materia = await Materia.findOne({ id })
+        const { cursantes } = materia
+
+        cursantes.filter((estudiante, key) => {
+            const { _id } = estudiante
+
+            if (id = _id) {
+                const { estudiante, asistencia, primerParcial, seegundoParcial, final, isActive } = req.body
+                materia.cursantes[0] = { estudiante, asistencia, primerParcial, seegundoParcial, final, isActive }
+
+            }
+            materia.save()
+        })
+        return res.status(200).json('La informacion del estudiante se actualizó correctamente')
+    } catch (error) {
+        return res.status(500).json('Error al actualizar la informacion del estudiante')
+    }
+
+
+
+}
+
 controller.updateMateria = async (req, res) => {
     const { id } = req.params
 
     const { nombre, jefeCatedra, auxiliar, clases, cuatrimestre, anio, isActive, cursantes } = req.body
-    const update = {}
+    const update = { cursantes }
 
-    //Actualizar cursantes en otro endpoint?
-    //Conlleva otra request tipo PUT al servidorf
+    if (nombre) { update.nombre = nombre }
+    if (jefeCatedra) { update.jefeCatedra = jefeCatedra }
+    if (auxiliar) { update.auxiliar = auxiliar }
+    if (clases) { update.clases = clases }
+    if (cuatrimestre) { update.cuatrimestre = cuatrimestre }
+    if (anio) { update.anio = anio }
+    //que se cague el del front (enviar el listado completo de alumnos desde el front)
+    // if (cursantes) { update.cursantes = cursantes }
+    if (isActive !== undefined) { update.isActive = isActive }
+    // console.log(update)
 
-    //Actualizar cursantes en este endpoint
-    //Conlleva una petición 
-
-    if              (nombre){ update.        nombre = nombre        }
-    if         (jefeCatedra){ update.   jefeCatedra = jefeCatedra   }
-    if            (auxiliar){ update.      auxiliar = auxiliar      }
-    if              (clases){ update.        clases = clases        }
-    if        (cuatrimestre){ update.  cuatrimestre = cuatrimestre  }
-    if                (anio){ update.          anio = anio          }
-    if           (cursantes){ update.     cursantes = cursantes     }
-    if   (isActive !== null){ update.      isActive = isActive      }
-
-    console.log(update)
-    if (update.nombre || update.jefeCatedra || update.auxiliar || update.clases || update.cuatrimestre || update.anio || update.cursantes || update.isActive !== null) {
+    if (update.nombre || update.jefeCatedra || update.auxiliar || update.clases || update.cuatrimestre || update.anio || update.isActive !== undefined) {
         try {
             const materia = await Materia.findByIdAndUpdate(id, update, { new: true })
 

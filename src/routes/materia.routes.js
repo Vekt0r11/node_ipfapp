@@ -14,6 +14,7 @@ route.get("/:id", getMateria); //
 
 route.post("/create", createMateria); //
 
+// route.put("/planilla/:id", updatePlanilla)
 route.put("/:id", updateMateria); //
 
 route.delete("/:id", deleteMateria);//
