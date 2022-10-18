@@ -54,6 +54,10 @@ const MateriaSchema = new Schema({
     final: {
       type: Number,
       required: true
+    },
+    isActive:{
+      type: Boolean,
+      default: true
     }
   }]
 })
