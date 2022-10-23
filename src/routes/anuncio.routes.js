@@ -1,19 +1,18 @@
 const route = require("express").Router();
-const {
-  getAnuncio,
-  getAnuncios,
-  createAnuncio,
-  updateAnuncio,
-  deleteAnuncio
-} = require("../controllers/anuncio.controllers");
+const { verifyAnuncio } = require('../middlewares/anuncio.middleware')
+const { validate } = require('../util/validate')
 
-route.get("/", getAnuncios); //
-route.get("/:id", getAnuncio); //
+const { getAnuncio, getAnuncios, createAnuncio, updateAnuncio, deleteAnuncio } = require("../controllers/anuncio.controllers");
 
-route.post("/create", createAnuncio); //
+route.get("/", getAnuncios);
+route.get("/:id", getAnuncio);
 
-route.put("/:id", updateAnuncio); //
+route.post("/create",
+  [verifyAnuncio, validate],
+  createAnuncio);
 
-route.delete("/:id", deleteAnuncio);//
+route.put("/:id", updateAnuncio);
+
+route.delete("/:id", deleteAnuncio);
 
 module.exports = route;

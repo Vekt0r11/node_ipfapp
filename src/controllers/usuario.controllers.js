@@ -28,7 +28,7 @@ controller.getUsuario = async (req, res) => {
 //Crear usuario nuevo
 controller.createUsuario = async (req, res) => {
 
-  let { nombreUsuario, contrasenia, correo, infoPersonal, documentaciones, fotoPerfil, rol, datosEstudiante, datosProfesor, datosAdministrativo } = req.body
+  const { nombreUsuario, contrasenia, correo, infoPersonal, documentaciones, fotoPerfil, rol, datosEstudiante, datosProfesor, datosAdministrativo } = req.body
 
   const datos = { nombreUsuario, contrasenia, correo, infoPersonal, documentaciones, fotoPerfil, rol }
 
@@ -38,7 +38,7 @@ controller.createUsuario = async (req, res) => {
 
   try {
     const salt = bcryptjs.genSaltSync(8);
-    contrasenia = bcryptjs.hashSync(contrasenia, salt)
+    datos.contrasenia = bcryptjs.hashSync(contrasenia, salt)
 
     const usuario = new Usuario(datos)
     await usuario.save()

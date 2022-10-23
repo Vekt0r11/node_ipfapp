@@ -1,19 +1,18 @@
 const route = require("express").Router();
-const { 
-  getCarrera,
-  getCarreras,
-  createCarrera,
-  updateCarrera,
-  deleteCarrera
-} = require("../controllers/carrera.controllers");
+const {verifyCarrera} = require('../middlewares/carrera.middleware')
+const {validate} = require('../util/validate')
 
-route.get("/", getCarreras); //
-route.get("/:id", getCarrera); //
+const { getCarrera, getCarreras, createCarrera, updateCarrera, deleteCarrera } = require("../controllers/carrera.controllers");
 
-route.post("/create", createCarrera); //
+route.get("/", getCarreras);
+route.get("/:id", getCarrera);
 
-route.put("/:id", updateCarrera); //
+route.post("/create",
+  [verifyCarrera, validate],
+  createCarrera);
 
-route.delete("/:id", deleteCarrera);//
+route.put("/:id", updateCarrera);
+
+route.delete("/:id", deleteCarrera);
 
 module.exports = route;

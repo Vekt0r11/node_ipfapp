@@ -1,8 +1,19 @@
 const Anuncio = require("../models/anuncio.models");
 const controller = {};
 
-controller.getAnuncios = async (_req, res) => {
-  const anuncios = await Anuncio.find({ isActive: true })
+controller.getAnuncios = async (req, res) => {
+  const { tipo, materia } = req.query
+
+  const query = { isActive: true }
+
+  if (tipo) {
+    query.tipo = tipo
+  }
+  if(materia){
+    query.materia = materia
+  }
+
+  const anuncios = await Anuncio.find(query)
     .populate('autor carrera materia', 'infoPersonal.nombres nombre nombre')
 
   const anunciosFormateados = anuncios.map((element) => {
@@ -12,8 +23,8 @@ controller.getAnuncios = async (_req, res) => {
 
     anuncio.autor = { nombres: autor.infoPersonal.nombres, _id: autor._id }
 
-    if (carrera) { anuncio.carrera = carrera.nombre }
-    if (materia) { anuncio.materia = materia.nombre }
+    if (carrera) { anuncio.carrera = carrera }
+    if (materia) { anuncio.materia = materia }
 
     return anuncio
   })
@@ -32,8 +43,8 @@ controller.getAnuncio = async (req, res) => {
     const anuncioFormateado = { _id, titulo, descripcion, fecha, tipo }
 
     anuncioFormateado.autor = autor.infoPersonal.nombres
-    if (carrera) { anuncio.carrera = carrera.nombre }
-    if (materia) { anuncio.materia = materia.nombre }
+    if (carrera) { anuncio.carrera = carrera }
+    if (materia) { anuncio.materia = materia }
 
     res.json(anuncioFormateado)
   } catch (error) {
@@ -44,7 +55,16 @@ controller.getAnuncio = async (req, res) => {
 }
 controller.createAnuncio = async (req, res) => {
 
-  const datos = { autor, titulo, descripcion, fecha, materia, carrera } = req.body
+  const { autor, titulo, descripcion, materia, carrera } = req.body
+  const datos = { autor, titulo, descripcion, materia, carrera }
+  datos.fecha = new Date().toString()
+
+  if (materia) {
+    datos.tipo = 'materia'
+  }
+  if (carrera) {
+    datos.tipo = 'carrera'
+  }
 
   try {
 
