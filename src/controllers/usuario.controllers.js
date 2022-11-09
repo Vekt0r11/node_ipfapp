@@ -1,5 +1,9 @@
 const Usuario = require("../models/usuario.models");
+
 const bcryptjs = require("bcryptjs");
+const jwt = require('jsonwebtoken')
+
+const SECRET = process.env.SECRET
 const controller = {};
 
 //Obtener usuarios activos
@@ -21,6 +25,38 @@ controller.getUsuario = async (req, res) => {
   } catch (error) {
     res.json({
       msg: "Error al obtener usuario"
+    })
+  }
+}
+
+controller.loginUsuario = async (req, res) => {
+
+  const {nombreUsuario, contrasenia} = req.body
+  const usuario = await Usuario.findOne({nombreUsuario:nombreUsuario})
+  
+  if (usuario) {
+    
+    const isValid = bcryptjs.compareSync(contrasenia, usuario.contrasenia);
+
+    if (isValid) {
+
+      const token = jwt.sign({id: usuario._id, rol: usuario.rol}, SECRET,{
+        expiresIn: 900
+      })
+
+      return res.status(200).json({
+        msg: "Inicio de sesión exitoso.",
+        token: token
+      })
+
+    } else {
+      return res.status(401).json({
+        msg: "Contraseña incorrecta."
+      })
+    }
+  } else {
+    return res.status(404).json({
+      msg: "El usuario no existe.",
     })
   }
 }
@@ -49,7 +85,7 @@ controller.createUsuario = async (req, res) => {
   } catch (error) {
     return res.status(401).json({
       msg: "Error al crear usuario",
-      // error
+      // error:error
     })
   }
 }

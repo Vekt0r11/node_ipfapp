@@ -90,16 +90,22 @@ controller.getAsignadas = async (req, res) => {
 
   try {
     const materias = await Materia.find(query)
-    const materiasAsignadasEstudiante = []
-
-    materias.forEach((element) => {
-      materiasAsignadasEstudiante.push({
-        id: element._id,
-        nombre: element.nombre
+      .populate({
+        path: 'jefeCatedra auxiliar cursantes.estudiante',
+        select: 'infoPersonal.nombres infoPersonal.apellidos isActive',
       })
-    })
+    // const materiasAsignadasEstudiante = []
 
-    res.status(200).json(materiasAsignadasEstudiante)
+    // materias.forEach((element) => {
+    //   materiasAsignadasEstudiante.push({
+    //     id: element._id,
+    //     nombre: element.nombre,
+    //     anio: element.anio,
+    //     jefeCatedra: element.jefeCatedra
+    //   })
+    // })
+
+    res.status(200).json(materias)
   } catch (error) {
     res.status(404).json({
       msg: 'No se encontraron materias asignadas al usuario'
@@ -114,7 +120,7 @@ controller.createMateria = async (req, res) => {
   const materias = await Materia.find({ isActive: true })
     .populate({
       path: 'jefeCatedra auxiliar cursantes.estudiante',
-      select: 'infoPersonal.nombres infoPersonal.nombres isActive infoPersonal.nombres',
+      select: 'infoPersonal.nombres infoPersonal.apellidos infoPersonal.nombres isActive infoPersonal.nombres',
       match: { isActive: { $eq: true } }
     })
   try {
