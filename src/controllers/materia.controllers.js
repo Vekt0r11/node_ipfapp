@@ -94,16 +94,6 @@ controller.getAsignadas = async (req, res) => {
         path: 'jefeCatedra auxiliar cursantes.estudiante',
         select: 'infoPersonal.nombres infoPersonal.apellidos isActive',
       })
-    // const materiasAsignadasEstudiante = []
-
-    // materias.forEach((element) => {
-    //   materiasAsignadasEstudiante.push({
-    //     id: element._id,
-    //     nombre: element.nombre,
-    //     anio: element.anio,
-    //     jefeCatedra: element.jefeCatedra
-    //   })
-    // })
 
     res.status(200).json(materias)
   } catch (error) {

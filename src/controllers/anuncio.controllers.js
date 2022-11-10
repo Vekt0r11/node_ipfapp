@@ -1,8 +1,9 @@
 const Anuncio = require("../models/anuncio.models");
+const Materia = require("../models/materia.models");
 const controller = {};
 
 controller.getAnuncios = async (req, res) => {
-  const { tipo, materia } = req.query
+  const { tipo, materia } = req.params
 
   const query = { isActive: true }
 
@@ -32,8 +33,30 @@ controller.getAnuncios = async (req, res) => {
   res.json(anunciosFormateados)
 }
 
-controller.getAnuncio = async (req, res) => {
+controller.getAnunciosEstudiante = async (req, res) => {
+
   const { id } = req.params
+
+  try {
+    const materias = await Materia.find({ isActive: true, cursantes: { $elemMatch: { estudiante: { $eq: id } } } })
+
+    const idMaterias = materias.map(element => element._id)
+
+    const anuncios = []
+
+    for (let i = 0; i < idMaterias.length; i++) {
+      anuncios.push(...await Anuncio.find({materia:idMaterias[i]}))
+    }
+
+    res.json(anuncios)
+
+  } catch (error) {
+    
+  }
+}
+
+controller.getAnuncio = async (req, res) => {
+  const { id } = req.query
 
   try {
     const anuncio = await Anuncio.findOne({ _id: id })
