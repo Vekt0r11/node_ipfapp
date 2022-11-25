@@ -9,7 +9,6 @@ const controller = {};
 //Obtener usuarios activos
 controller.getUsuarios = async (_req, res) => {
   const usuarios = await Usuario.find({ isActive: true })
-  // .populate('Carrera', { select: 'nombre'})
 
   res.json(usuarios)
 }
@@ -17,11 +16,14 @@ controller.getUsuarios = async (_req, res) => {
 //Obtener un usuario por id
 controller.getUsuario = async (req, res) => {
   const { id } = req.params
+  const decodedID = jwt.decode(id)
 
   try {
-    const usuario = await Usuario.findOne({ _id: id })
+    const usuario = await Usuario.findOne({ _id: decodedID.id })
 
-    res.json(usuario)
+    const {infoPersonal, documentaciones, id = _id, nombreUsuario, contrasenia, correo, fotoPerfil, rol, isActive} = usuario
+    
+    res.json({infoPersonal, documentaciones, id, nombreUsuario, contrasenia, correo, fotoPerfil, rol, isActive})
   } catch (error) {
     res.json({
       msg: "Error al obtener usuario"
@@ -33,7 +35,7 @@ controller.loginUsuario = async (req, res) => {
 
   const {nombreUsuario, contrasenia} = req.body
   const usuario = await Usuario.findOne({nombreUsuario:nombreUsuario})
-  
+  console.log(req.body)
   if (usuario) {
     
     const isValid = bcryptjs.compareSync(contrasenia, usuario.contrasenia);
@@ -46,17 +48,20 @@ controller.loginUsuario = async (req, res) => {
 
       return res.status(200).json({
         msg: "Inicio de sesión exitoso.",
+        loggedIn: true,
         token: token
       })
 
     } else {
       return res.status(401).json({
-        msg: "Contraseña incorrecta."
+        msg: "Usuario y/o contraseñas incorrectas.",
+        loggedIn: false
       })
     }
   } else {
-    return res.status(404).json({
-      msg: "El usuario no existe.",
+    return res.status(401).json({
+      msg: "Usuario y/o contraseñas incorrectas. usuario no encotnrado",
+      loggedIn: false
     })
   }
 }

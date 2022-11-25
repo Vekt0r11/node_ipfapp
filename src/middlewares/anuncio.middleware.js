@@ -8,7 +8,7 @@ exports.verifyAnuncio = checkSchema({
     isLength: {
       options: {
         min: 6,
-        max: 32
+        max: 42
       },
       errorMessage: 'El título debe ser de 6 a 32 carateres de longitud.'
     },

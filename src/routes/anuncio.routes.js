@@ -12,7 +12,7 @@ route.post("/create",
   [verifyAnuncio, validate],
   createAnuncio);
 
-route.put("/:id", updateAnuncio);
+route.put("/", updateAnuncio);
 
 route.delete("/:id", deleteAnuncio);
 

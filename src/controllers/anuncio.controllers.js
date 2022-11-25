@@ -10,7 +10,7 @@ controller.getAnuncios = async (req, res) => {
   if (tipo) {
     query.tipo = tipo
   }
-  if(materia){
+  if (materia) {
     query.materia = materia
   }
 
@@ -39,19 +39,29 @@ controller.getAnunciosEstudiante = async (req, res) => {
 
   try {
     const materias = await Materia.find({ isActive: true, cursantes: { $elemMatch: { estudiante: { $eq: id } } } })
-
     const idMaterias = materias.map(element => element._id)
 
     const anuncios = []
 
     for (let i = 0; i < idMaterias.length; i++) {
-      anuncios.push(...await Anuncio.find({materia:idMaterias[i]}))
+      anuncios.push(
+        ...await Anuncio.find({ isActive: true, materia: idMaterias[i] })
+          .populate({
+            path: 'autor carrera materia',
+            select: 'infoPersonal.nombres infoPersonal.apellidos nombre nombre'
+          })
+          .select('-__v')
+      )
     }
 
-    res.json(anuncios)
+    const anunciosOrdenados = anuncios.sort((a,b) => {
+      return new Date(b.fecha) - new Date(a.fecha)
+    })
+
+    res.json(anunciosOrdenados)
 
   } catch (error) {
-    
+
   }
 }
 
@@ -104,20 +114,18 @@ controller.createAnuncio = async (req, res) => {
   }
 }
 controller.updateAnuncio = async (req, res) => {
-  const { id } = req.params
-  const { titulo, descripcion, isActive } = req.body
+  const { _id, titulo, descripcion } = req.body
   const update = {}
 
   if (titulo) { update.titulo = titulo }
   if (descripcion) { update.descripcion = descripcion }
-  if (isActive !== null) { update.isActive = isActive }
 
-  if (update.titulo || update.descripcion || update.isActive !== null) {
+  if (update.titulo || update.descripcion) {
 
     try {
-      const anuncio = await Anuncio.findByIdAndUpdate(id, update, { new: true })
+      const anuncio = await Anuncio.findByIdAndUpdate(_id, update, { new: true })
 
-      return res.json({
+      return res.status(200).json({
         msg: "Informacion del anuncio actualizada"
       })
 
@@ -132,7 +140,6 @@ controller.updateAnuncio = async (req, res) => {
 controller.deleteAnuncio = async (req, res) => {
 
   const { id } = req.params
-
   try {
     const anuncio = await Anuncio.findByIdAndUpdate(id, { isActive: false }, { new: true })
 

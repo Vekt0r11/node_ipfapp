@@ -13,11 +13,11 @@ route.post("/create",
   [verifyMateria, validate],
   createMateria)
 route.post("/cursante/:id",
-[verifyCursante, validate],
+  [verifyCursante, validate],
   addCursante)
 
+route.put("/cursante/", updateInfoCursante)
 route.put("/:id", updateMateria)
-route.put("/cursante/:id", updateInfoCursante)
 
 route.delete("/:id", deleteMateria)
 

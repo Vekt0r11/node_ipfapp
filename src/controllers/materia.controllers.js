@@ -92,7 +92,7 @@ controller.getAsignadas = async (req, res) => {
     const materias = await Materia.find(query)
       .populate({
         path: 'jefeCatedra auxiliar cursantes.estudiante',
-        select: 'infoPersonal.nombres infoPersonal.apellidos isActive',
+        select: 'infoPersonal.nombres infoPersonal.apellidos isActive infoPersonal.nombres infoPersonal.apellidos isActive infoPersonal.nombres infoPersonal.apellidos isActive',
       })
 
     res.status(200).json(materias)
@@ -151,21 +151,26 @@ controller.addCursante = async (req, res) => {
 }
 
 controller.updateInfoCursante = async (req, res) => {
-  //Pasar id del objeto del cursante
-  const { id } = req.params
+  //Pasar id de materia
+  const { idmateria, idcursante } = req.query
 
+  console.log(idmateria, idcursante)
   try {
-    const materia = await Materia.findOne({ cursantes: { $elemMatch: { _id: { $eq: id } } } })
+    // const materia = await Materia.findOne({ cursantes: { $elemMatch: { _id: { $eq: id } } } })
+    const materia = await Materia.findOne({_id:idmateria, cursantes: { $elemMatch: { _id: { $eq: idcursante } } }})
     const { cursantes } = materia
-    // console.log(cursantes)
 
     cursantes.filter((estudiante, key) => {
       const { _id } = estudiante
 
-      if (id == _id.toString()) {
+      if (idcursante == _id.toString()) {
         const { estudiante, asistencia, primerParcial, segundoParcial, final, isActive } = req.body
         materia.cursantes[key] = { estudiante, asistencia, primerParcial, segundoParcial, final, isActive }
         materia.save()
+      } else {
+        return res.status(403).json({
+          msg: 'Error al encontrar usuario'
+        })
       }
     })
     return res.status(200).json({
@@ -173,7 +178,8 @@ controller.updateInfoCursante = async (req, res) => {
     })
   } catch (error) {
     return res.status(500).json({
-      msg: 'Error al actualizar la informacion del estudiante'
+      msg: 'Error al actualizar la informacion del estudiante',
+      error 
     })
   }
 }
